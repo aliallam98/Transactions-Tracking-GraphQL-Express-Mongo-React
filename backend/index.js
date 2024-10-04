@@ -6,6 +6,8 @@ import { ApolloServerPluginDrainHttpServer } from "apollo-server-core";
 import { expressMiddleware } from '@apollo/server/express4';
 
 import { config } from "dotenv";
+import { GraphQLLocalStrategy, buildContext } from "graphql-passport";
+
 
 import session from "express-session";
 import passport from "passport";
@@ -13,16 +15,20 @@ import cors from "cors"
 
 import connectMongo from "connect-mongodb-session"
 
-// import { GraphQLLocalStrategy, buildContext } from "graphql-passport";
 
 import mergedTypeDefs from "./src/graphQL/typeDefs/index.js";
 import mergedResolvers from "./src/graphQL/resolvers/index.js";
 import connectToDB from "./src/DB/databaseConnection.js";
+import passportConfigure from "./src/passport/passport.config.js";
 
 const app = express();
 const httpServer = http.createServer(app);
 config()
+passportConfigure()
+connectToDB()
 
+
+// To store session in DB
 const MongoDBStore = connectMongo(session)
 const store = new MongoDBStore({
   uri:process.env.DB_URL,
@@ -53,16 +59,18 @@ const server = new ApolloServer({
   typeDefs: mergedTypeDefs,
   resolvers: mergedResolvers,
   plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
-  // context: ({ req, res }) => buildContext({ req, res, User }),
+  context: ({ req, res }) => buildContext({ req, res, User })
 });
 
 //Start Server
 await server.start();
-connectToDB()
 server.applyMiddleware({ app }); //, cors: false
 
 app.use("/",
-  cors(),
+  cors({
+    origin:"*",
+    credentials:true
+  }),
   express.json(),
   expressMiddleware(server,{
     context: async({req,res}) => ({req,res})
