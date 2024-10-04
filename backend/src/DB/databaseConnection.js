@@ -7,4 +7,4 @@ export const connectToDB = async () => {
     .catch(() => console.log("Something went wrong in db connection"));
 };
 
-export default connectToDB;
+export default connectToDB
