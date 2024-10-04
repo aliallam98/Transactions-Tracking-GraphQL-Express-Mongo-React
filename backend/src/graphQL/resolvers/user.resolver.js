@@ -1,7 +1,29 @@
 import userModel from "../../DB/models/User.mode.js";
+import bcrypt  from "bcryptjs"
 
 const userResolver = {
-  Query: {},
+  Query: {
+    authUser:async(_,__,context)=>{
+      try {
+        const user = await context.getUser()
+      } catch (error) {
+        console.log("Error in auth user",error);
+        throw new Error(error.message);
+        
+      }
+    },
+    user:async(_,{userId})=>{
+      try {
+        const user = await userModel.findById(userId)
+        return user
+      } catch (error) {
+        console.log("Error in user query",error);
+        throw new Error(error.message);
+      }
+    }
+
+    // TODO: Transitions relations
+  },
   Mutation: {
     signUp: async (_, { input }, context) => {
       try {
@@ -9,11 +31,11 @@ const userResolver = {
         if (!username || !name || !password || !gender)
           throw new Error("All fields are required");
 
-        const isUsernameExist = await userModel.findOne({ username });
-        if (isUsernameExist)
+        const isUsernameExists = await userModel.findOne({ username });
+        if (isUsernameExists)
           throw new Error("This username is exist try another one");
 
-        const hashedPassword = await bcrypt.hashSync(password, 8);
+        const hashedPassword = await bcrypt.hash(password, 8);
 
         // https://avatar-placeholder.iran.liara.run/
         const maleProfilePic = `https://avatar.iran.liara.run/public/boy?username=${username}`;
@@ -27,6 +49,7 @@ const userResolver = {
           profilePicture: gender === "male" ? maleProfilePic : femaleProfilePic,
         });
 
+        await context.login(newUser)
         return newUser;
       } catch (error) {
         console.log("Error in signUp: ", error);
@@ -37,6 +60,7 @@ const userResolver = {
       try {
         const { username, password } = input;
         if (!username || !password) throw new Error("All fields are required");
+
 
         const { user } = await context.authenticate("graphql-local", {
           username,
@@ -51,14 +75,19 @@ const userResolver = {
         throw new Error(error.message || "Internal server error");
       }
     },
-    // logOut: async (_,_,context) => {
-    //   try {
-    //     await context.logout();
-    //   } catch (error) {
-    //     console.error("Error in logout:", err);
-		// 		throw new Error(err.message || "Internal server error");
-    //   }
-    // },
+    logOut: async (_,__,context) => {
+      try {
+        await context.logout();
+        req.session.destroy((err)=>{
+          if(err) throw err
+        })
+        res.clearCookie("connect.sid")
+        return {message:"Logged out successfully"}
+      } catch (error) {
+        console.error("Error in logout:", err);
+				throw new Error(err.message || "Internal server error");
+      }
+    },
   },
 };
 
