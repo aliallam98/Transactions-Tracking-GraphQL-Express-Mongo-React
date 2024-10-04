@@ -51,14 +51,14 @@ const userResolver = {
         throw new Error(error.message || "Internal server error");
       }
     },
-    logOut: async (_,_,context) => {
-      try {
-        await context.logout();
-      } catch (error) {
-        console.error("Error in logout:", err);
-				throw new Error(err.message || "Internal server error");
-      }
-    },
+    // logOut: async (_,_,context) => {
+    //   try {
+    //     await context.logout();
+    //   } catch (error) {
+    //     console.error("Error in logout:", err);
+		// 		throw new Error(err.message || "Internal server error");
+    //   }
+    // },
   },
 };
 

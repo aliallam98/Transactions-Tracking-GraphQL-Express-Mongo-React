@@ -10,13 +10,13 @@ type User {
 
 type Query {
     users:[User!]
-    authUser:user
-    user:(userId:ID!):User
+    authUser:User
+    user(userId:ID!):User
 }
 
 type Mutation {
     signUp(input:SignUpInput!):User
-    signIn(input:SignInInput!):User
+    logIn(input:SignInInput!):User
     logout:LogoutResponse
 }
 
@@ -33,7 +33,6 @@ input SignInInput{
 type LogoutResponse{
     message:String!
 }
+`;
 
-`
-
-export default userTypeDef
+export default userTypeDef;
