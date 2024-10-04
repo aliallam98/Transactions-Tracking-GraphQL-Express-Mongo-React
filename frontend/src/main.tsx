@@ -6,14 +6,13 @@ import { RouterProvider } from "react-router-dom";
 import router from "./routes/index.tsx";
 import GridBackground from "./components/GridBackground.tsx";
 
-import {
-  ApolloClient,
-  InMemoryCache,
-  ApolloProvider,
-} from "@apollo/client";
+
+
+import { ApolloClient, InMemoryCache, ApolloProvider, } from '@apollo/client';
+
 
 const client = new ApolloClient({
-  uri: "https://flyby-router-demo.herokuapp.com/",
+  uri: "https://flyby-router-demo.herokuapp.com/", // change it when backend is ready 
   cache: new InMemoryCache(),
 });
 
