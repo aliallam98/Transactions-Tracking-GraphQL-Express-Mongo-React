@@ -5,9 +5,16 @@ import Card from "@/components/Card";
 import CardsWrapper from "@/components/CardsWrapper";
 import Header from "@/components/Header";
 import TransactionForm from "@/components/TransactionForm";
+import { useQuery } from "@apollo/client";
+import { GET_AUTH_USER } from "@/graphql/queries/userQueries";
+
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 const HomePage = () => {
+  const { loading, error, data } = useQuery(GET_AUTH_USER);
+  console.log(loading);
+  console.log(error);
+  console.log(data);
   const chartData = {
     labels: ["Saving", "Expense", "Investment"],
     datasets: [
