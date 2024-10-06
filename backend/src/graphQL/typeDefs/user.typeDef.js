@@ -17,7 +17,7 @@ type Query {
 type Mutation {
     signUp(input:SignUpInput!):User
     logIn(input:SignInInput!):User
-    logout:LogoutResponse
+    logOut:LogoutResponse
 }
 
 input SignUpInput{

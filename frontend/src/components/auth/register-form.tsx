@@ -13,12 +13,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
 import { Input } from "@/components/ui/input";
 import { RegisterSchema } from "../../schemas";
 import CardWrapper from "./card-wrapper";
 import { FormError } from "./form-error";
 import { FormSuccess } from "./form-success";
 import { useState, useTransition } from "react";
+import { Label } from "../ui/label";
 
 const RegisterForm = () => {
   const [error, setError] = useState("");
@@ -31,6 +34,7 @@ const RegisterForm = () => {
       email: "",
       password: "",
       name: "",
+      gender:""
     },
   });
 
@@ -101,10 +105,44 @@ const RegisterForm = () => {
               </FormItem>
             )}
           />
+                  <FormField
+          control={form.control}
+          name="gender"
+          render={({ field }) => (
+            <FormItem className="space-y-3">
+              <FormControl>
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  className="flex items-center"
+                >
+                  <Label htmlFor="option-one">Gender: </Label>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem
+                      value="Male"
+                      id="option-one"
+                      className="border-neutral-400"
+                    />
+                    <Label htmlFor="option-one">Male</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem
+                      value="Female"
+                      id="option-two"
+                      className="border-neutral-400"
+                    />
+                    <Label htmlFor="option-two">Female</Label>
+                  </div>
+                </RadioGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
           <FormError message={error} />
           <FormSuccess message={success} />
           <Button type="submit" className="w-full" disabled={isPending}>
-            Login
+            Sign Up
           </Button>
         </form>
       </Form>

@@ -2,7 +2,7 @@ import transactionModel from "../../DB/models/Transaction.mode.js";
 
 const transactionResolver = {
   Query: {
-    transactions: async (_, _, context) => {
+    transactions: async (_, __, context) => {
       const userId = context.getUser()._id;
       if (!userId) throw new Error("Not Authenticated");
 
