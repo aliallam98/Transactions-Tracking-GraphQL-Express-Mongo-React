@@ -18,34 +18,54 @@ import { LoginSchema } from "../../schemas";
 import CardWrapper from "./card-wrapper";
 import { FormError } from "./form-error";
 import { FormSuccess } from "./form-success";
-import { useState, useTransition } from "react";
+import { useState } from "react";
+import { useMutation } from "@apollo/client";
+import { LOGIN } from "@/graphql/mutations/userMutation";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [isPending, startTransition] = useTransition();
+  const navigate = useNavigate()
+  // const [isPending, startTransition] = useTransition();
+
+
+
+  const [loginFn,{loading:isPending}] = useMutation(LOGIN)
+
+
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
-      email: "",
+      username: "",
       password: "",
     },
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof LoginSchema>) {
+  async function onSubmit(values: z.infer<typeof LoginSchema>) {
     console.log(values);
     setError("");
     setSuccess("");
 
-    startTransition(() => {
-      login(values).then((res) => {
-        console.log(res);
-        res.success
-          ? setSuccess(res.message || "")
-          : setError(res.message || "");
-      });
-    });
+    loginFn({
+      variables:{
+        input:values
+      }
+    })
+    .then(()=>{
+      navigate("/")
+    })
+    .catch((error)=>setError(error.message))
+
+    // startTransition(() => {
+    //   login(values).then((res) => {
+    //     console.log(res);
+    //     res.success
+    //       ? setSuccess(res.message || "")
+    //       : setError(res.message || "");
+    //   });
+    // });
   }
 
   return (
@@ -60,12 +80,12 @@ const LoginForm = () => {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 ">
           <FormField
             control={form.control}
-            name="email"
+            name="username"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>username</FormLabel>
                 <FormControl>
-                  <Input placeholder="Email" {...field} disabled={isPending} />
+                  <Input placeholder="username" {...field} disabled={isPending} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

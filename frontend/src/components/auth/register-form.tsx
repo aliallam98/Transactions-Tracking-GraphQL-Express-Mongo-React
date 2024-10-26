@@ -27,7 +27,7 @@ import { useMutation } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 
 const RegisterForm = () => {
-  const [signUpFn, { loading: isPending, data }] = useMutation(SIGN_UP);
+  const [signUpFn, { loading: isPending }] = useMutation(SIGN_UP);
   const [clientError, setClientError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate()
