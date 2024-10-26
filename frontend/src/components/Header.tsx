@@ -1,6 +1,6 @@
 const Header = ({ title }: { title: string }) => {
   return (
-    <div className="mb-20">
+    <div className="mb-10">
       <h1 className="md:text-6xl text-5xl lg:text-8xl font-bold text-center  relative z-50 text-white pt-10">
         {title}
       </h1>

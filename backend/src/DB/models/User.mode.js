@@ -5,8 +5,8 @@ const userSchema = new Schema(
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     name: { type: String, required: true },
-    profileImage: { type: String, required: true },
-    gender: { type: String, default: "male", enum: ["male", "female"] },
+    profilePicture: { type: String, required: true },
+    gender: { type: String, default: "Male", enum: ["Male", "Female"] },
   },
   {
     timestamps: true,

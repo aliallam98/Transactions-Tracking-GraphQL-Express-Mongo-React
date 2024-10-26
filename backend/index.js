@@ -33,10 +33,10 @@ const store = new MongoDBStore({
   collection: "Sessions",
 });
 
-// // Catch errors
-// store.on("error", function (error) {
-//   console.log(error);
-// });
+// Catch errors
+store.on("error", function (error) {
+  console.log(error);
+});
 
 
 app.use(

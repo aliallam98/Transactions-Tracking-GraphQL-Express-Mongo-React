@@ -20,13 +20,18 @@ import { RegisterSchema } from "../../schemas";
 import CardWrapper from "./card-wrapper";
 import { FormError } from "./form-error";
 import { FormSuccess } from "./form-success";
-import { useState, useTransition } from "react";
+import { useState } from "react"; //useTransition
 import { Label } from "../ui/label";
+import { SIGN_UP } from "@/graphql/mutations/userMutation";
+import { useMutation } from "@apollo/client";
+import { useNavigate } from "react-router-dom";
 
 const RegisterForm = () => {
-  const [error, setError] = useState("");
+  const [signUpFn, { loading: isPending, data }] = useMutation(SIGN_UP);
+  const [clientError, setClientError] = useState("");
   const [success, setSuccess] = useState("");
-  const [isPending, startTransition] = useTransition();
+  const navigate = useNavigate()
+  // const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
@@ -34,19 +39,32 @@ const RegisterForm = () => {
       email: "",
       password: "",
       name: "",
-      gender:""
+      username: "",
+      gender: "",
     },
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof RegisterSchema>) {
+  async function onSubmit(values: z.infer<typeof RegisterSchema>) {
     console.log(values);
-    setError("");
+    setClientError("");
     setSuccess("");
+
+    signUpFn({
+      variables: {
+        input: values,
+      },
+    })
+    .then(()=> {
+       navigate("/login")
+    })
+    .catch((error) => setClientError(error.message));
+
+    if (isPending) return "loading";
 
     // startTransition(() => {
     //   register(values).then((res) => {
-    //     res.success ? setSuccess(res.message) : setError(res.message);
+    //     res.success ? setSuccess(res.message) : setclientError(res.message);
     //   });
     // });
   }
@@ -67,6 +85,19 @@ const RegisterForm = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Name" {...field} disabled={isPending} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="username"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Username</FormLabel>
                 <FormControl>
                   <Input placeholder="Name" {...field} disabled={isPending} />
                 </FormControl>
@@ -105,41 +136,41 @@ const RegisterForm = () => {
               </FormItem>
             )}
           />
-                  <FormField
-          control={form.control}
-          name="gender"
-          render={({ field }) => (
-            <FormItem className="space-y-3">
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="flex items-center"
-                >
-                  <Label htmlFor="option-one">Gender: </Label>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem
-                      value="Male"
-                      id="option-one"
-                      className="border-neutral-400"
-                    />
-                    <Label htmlFor="option-one">Male</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem
-                      value="Female"
-                      id="option-two"
-                      className="border-neutral-400"
-                    />
-                    <Label htmlFor="option-two">Female</Label>
-                  </div>
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-          <FormError message={error} />
+          <FormField
+            control={form.control}
+            name="gender"
+            render={({ field }) => (
+              <FormItem className="space-y-3">
+                <FormControl>
+                  <RadioGroup
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    className="flex items-center"
+                  >
+                    <Label htmlFor="option-one">Gender: </Label>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem
+                        value="Male"
+                        id="option-one"
+                        className="border-neutral-400"
+                      />
+                      <Label htmlFor="option-one">Male</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem
+                        value="Female"
+                        id="option-two"
+                        className="border-neutral-400"
+                      />
+                      <Label htmlFor="option-two">Female</Label>
+                    </div>
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormError message={clientError} />
           <FormSuccess message={success} />
           <Button type="submit" className="w-full" disabled={isPending}>
             Sign Up

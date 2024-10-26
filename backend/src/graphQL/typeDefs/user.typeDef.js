@@ -25,6 +25,7 @@ input SignUpInput{
     password:String!
     name:String!
     gender:String!
+    email:String!
 }
 input SignInInput{
     username:String!

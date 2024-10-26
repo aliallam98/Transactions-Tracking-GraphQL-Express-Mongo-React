@@ -8,13 +8,14 @@ import TransactionForm from "@/components/TransactionForm";
 import { useQuery } from "@apollo/client";
 import { GET_AUTH_USER } from "@/graphql/queries/userQueries";
 
-
 ChartJS.register(ArcElement, Tooltip, Legend);
 const HomePage = () => {
   const { loading, error, data } = useQuery(GET_AUTH_USER);
-  console.log(loading);
-  console.log(error);
+
+  if (loading) return "loading";
+
   console.log(data);
+
   const chartData = {
     labels: ["Saving", "Expense", "Investment"],
     datasets: [
@@ -42,10 +43,11 @@ const HomePage = () => {
   return (
     <>
       <Header title="Graph QL" />
+      {data.authUser && <h1 className="font-bold text-5xl text-center mb-20">{data.authUser}</h1>}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
-          <div className="h-[330px] w-[330px] md:h-[360px] md:w-[360px] mx-auto mb-4">
-            <Doughnut data={chartData} />
-          </div>
+        <div className="h-[330px] w-[330px] md:h-[360px] md:w-[360px] mx-auto mb-4">
+          <Doughnut data={chartData} />
+        </div>
         <TransactionForm type="Create" />
       </div>
       <CardsWrapper>
