@@ -1,5 +1,4 @@
 const transactionTypeDef = `#graphql
-scalar Date
 
 type Transaction {
     _id: ID!
@@ -7,10 +6,10 @@ type Transaction {
     description: String!
     paymentType: String!
     category: String!
-    amount:Float!
-    date:Date
+    amount: Float!
     location: String
-}
+    date: String!
+  }
 
 type Query {
         transactions:[Transaction!]
@@ -23,22 +22,23 @@ type Mutation {
     deleteTransaction(transactionId:ID!):Transaction
 }
 
-
 input CreateTransactionInput {
     description: String!
     paymentType: String!
     category: String!
-    amount:Float!
-    date:Date
+    amount: String!
+    date: String!
     location: String
-}
+  }
+
+
 input UpdateTransactionInput {
     transactionId:ID!
     description: String
     paymentType: String
     category: String
     amount:Float
-    date:Date
+    date:String
     location: String
 }
 

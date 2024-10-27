@@ -1,4 +1,4 @@
-import transactionModel from "../../DB/models/Transaction.mode.js";
+import transactionModel from "../../DB/models/Transaction.model.js";
 
 const transactionResolver = {
   Query: {
@@ -9,7 +9,7 @@ const transactionResolver = {
       const transactions = await transactionModel.find({ userId });
       return transactions;
     },
-    transaction: async (_, { transactionId},context) => {
+    transaction: async (_, { transactionId }, context) => {
       const userId = context.getUser()._id;
       if (!userId) throw new Error("Not Authenticated");
 
@@ -22,15 +22,19 @@ const transactionResolver = {
   },
   Mutation: {
     createTransaction: async (_, { input }, context) => {
-      const userId = context.getUser()._id;
-      if (!userId) throw new Error("Not Authenticated");
+      try {
+        const newTransaction = await transactionModel.create({
+          ...input,
+          userId: context.getUser()._id,
+        });
+        console.log("newTransaction");
 
-      const transaction = await transactionModel.create({
-        ...input,
-        userId,
-      });
-
-      return transaction;
+        return newTransaction;
+        
+      } catch (err) {
+        console.error("Error creating transaction:", err);
+        throw new Error("Error creating transaction");
+      }
     },
     updateTransaction: async (_, { input }, context) => {
       const userId = context.getUser()._id;

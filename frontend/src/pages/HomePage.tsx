@@ -13,6 +13,7 @@ const HomePage = () => {
   const { loading, error, data } = useQuery(GET_AUTH_USER);
 
   if (loading) return "loading";
+  if(error) return "Error getting user"
 
   console.log(data);
 
@@ -43,7 +44,7 @@ const HomePage = () => {
   return (
     <>
       <Header title="Graph QL" />
-      {data.authUser && <h1 className="font-bold text-5xl text-center mb-20">{data.authUser}</h1>}
+      {data.authUser && <h1 className="font-bold text-5xl text-center mb-20">Welcome {data.authUser.username}</h1>}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
         <div className="h-[330px] w-[330px] md:h-[360px] md:w-[360px] mx-auto mb-4">
           <Doughnut data={chartData} />

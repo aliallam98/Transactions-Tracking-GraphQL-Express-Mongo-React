@@ -17,7 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { FormError } from "./auth/form-error";
 import { FormSuccess } from "./auth/form-success";
 import { TransitionSchema } from "@/schemas";
@@ -30,31 +30,44 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useMutation } from "@apollo/client";
+import { CREATE_TRANSACTION } from "@/graphql/mutations/transactionMutation";
 
 interface IProps {
   type: "Create" | "Update";
 }
 const TransactionForm = ({ type }: IProps) => {
-  const [error, setError] = useState("");
+  const [clientError, setClientError] = useState("");
   const [success, setSuccess] = useState("");
-  const [isPending, startTransition] = useTransition();
+  const [createTransactionFn,{loading:isPending}] = useMutation(CREATE_TRANSACTION)
+  // const [isPending, startTransition] = useTransition();
+
+
   const form = useForm<z.infer<typeof TransitionSchema>>({
     resolver: zodResolver(TransitionSchema),
     defaultValues: {
       description: "",
       paymentType: "",
       category: "",
-      amount: 0,
+      amount: "0",
       location: "",
       date: new Date(),
     },
   });
 
+
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof TransitionSchema>) {
-    console.log(values);
-    setError("");
+    setClientError("");
     setSuccess("");
+    console.log(values);
+    
+    createTransactionFn({
+      variables:{
+        input: values
+      }
+    }).then(()=>{})
+      .catch((error)=>setClientError(error.message))
 
     // startTransition(() => {
     //   login(values).then((res) => {
@@ -144,9 +157,9 @@ const TransactionForm = ({ type }: IProps) => {
             name="amount"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Amount($)</FormLabel>
+                <FormLabel >Amount($)</FormLabel>
                 <FormControl>
-                  <Input placeholder="Amount" {...field} disabled={isPending} />
+                  <Input placeholder="Amount" {...field}  disabled={isPending} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -196,7 +209,7 @@ const TransactionForm = ({ type }: IProps) => {
           />
         </div>
 
-        <FormError message={error} />
+        <FormError message={clientError} />
         <FormSuccess message={success} />
         <Button type="submit" className="w-full" disabled={isPending}>
           {type === "Create" ? "Create" : "Update"}
